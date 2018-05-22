@@ -4,14 +4,14 @@ const _ = require('lodash');
 const Client  = require('authy-client').Client;
 const authy = new Client({key:"B2pxj5Oqh7sCnuqpjFSJW8trknK0y766"})
 const enums = require('authy-client').enums;
-
+var cors = require('cors');
 var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 
 var app = express();
 
-const port = process.env.PORT || 3000;
-
+const port = process.env.PORT || 8000;
+app.use(cors());
 app.use(bodyParser.json());
 
 app.post('/registry', (req, res) => {
