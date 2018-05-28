@@ -29,10 +29,10 @@ app.post('/user-info', (req, res) => {
     var body = _.pick(req.body, ['phoneNumber']);
 
     User.findOne({phoneNumber: body.phoneNumber},(err, doc) => {
-        if(!doc) {
-            return res.status(400).send({"error": "Phone number not registered"})
+        if(!doc || !doc.verified) {
+            return res.status(400).send({"error": "Phone number not registered or not verified"})
         }
-
+        
         res.send(doc)
     })
 
