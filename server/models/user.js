@@ -35,6 +35,9 @@ var User = mongoose.model('User', {
         type: Boolean,
         default: false,
     },
+    violations: {
+        type: Array
+    }
 })
 
 module.exports = {User};

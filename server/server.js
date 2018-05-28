@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
@@ -64,6 +66,23 @@ app.post('/verify-code', (req, res) => {
             res.status(400).send("Code was wrong")
         })
     });
+})
+
+app.post('/report-violation', (req, res) => {
+    var body = _.pick(req.body, ['licensePlates', 'reason','date']);
+    var licensePlates = body.licensePlates;
+    var reason = body.reason;
+    var date = body.date;
+    var violation = {reason:reason, date:date}
+    User.findOneAndUpdate({licensePlates},{$push :{violations:violation}}, {new: true}).then((user) => {
+        if(!user){
+            return res.status(404).send();
+        }
+
+        res.send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    })
 })
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
