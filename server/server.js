@@ -10,6 +10,10 @@ var cors = require('cors');
 var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 
+const accountSid = 'AC5361795ce96c6fbfe377adc697fe1459';
+const authToken = 'f17317fac3a7fef8448fc2d11cc7215e';
+const client = require('twilio')(accountSid, authToken);
+
 var app = express();
 
 const port = process.env.PORT || 8000;
@@ -55,7 +59,7 @@ app.post('/verify-code', (req, res) => {
     var code = body.code;
     var phoneNumber = body.phoneNumber;
     authy.verifyPhone({ countryCode: 'VN', phone: phoneNumber, token: code }, (error, response) => {
-        if (error) return res.status(400).send({"error" : "code was wrong"});
+        if (error) return res.status(404).send({"error" : "code was wrong"});
       
         User.findOneAndUpdate({phoneNumber},{$set:{verified:true}},{new : true}).then((user) => {
             if(!user) {
@@ -78,11 +82,17 @@ app.post('/report-violation', (req, res) => {
         if(!user){
             return res.status(404).send();
         }
+        client.messages.create({
+            body: reason,
+            from: '+447480486696',
+            to: '+84963448001'
+        })
+        .then(message => console.log(message.sid)).done();
 
         res.send(user);
-    }).catch((e) => {
-        res.status(400).send(e);
-    })
+        }).catch((e) => {
+            res.status(400).send(e);
+        })
 })
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
